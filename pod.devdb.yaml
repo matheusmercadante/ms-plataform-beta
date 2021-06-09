@@ -1,0 +1,168 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: "2021-04-27T00:08:55Z"
+  labels:
+    app: ms-plataform
+  name: ms-plataform
+spec:
+  containers:
+    # - name: elasticsearch
+    #   command:
+    #     - eswrapper
+    #   env:
+    #     - name: PATH
+    #       value: /usr/share/elasticsearch/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    #     - name: TERM
+    #       value: xterm
+    #     - name: container
+    #       value: podman
+    #     - name: ELASTIC_CONTAINER
+    #       value: "true"
+    #     - name: discovery.type
+    #       value: single-node
+    #     - name: HOSTNAME
+    #       value: ms-plataform
+    #   image: docker.io/library/elasticsearch:7.12.0
+    #   ports:
+    #     - containerPort: 9200
+    #     - containerPort: 9300
+    #   resources: {}
+    #   securityContext:
+    #     allowPrivilegeEscalation: true
+    #     capabilities: {}
+    #     privileged: false
+    #     readOnlyRootFilesystem: false
+    #     seLinuxOptions: {}
+    #   workingDir: /usr/share/elasticsearch
+    - name: postgres
+      command:
+        - postgres
+      env:
+        - name: PATH
+          value: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+        - name: TERM
+          value: xterm
+        - name: container
+          value: podman
+        - name: LANG
+          value: en_US.utf8
+        - name: PG_MAJOR
+          value: "11"
+        - name: PG_VERSION
+          value: "11.11"
+        - name: PGDATA
+          value: /var/lib/postgresql/data
+        - name: PG_SHA256
+          value: 40607b7fa15b7d63f5075a7277daf7b3412486aa5db3aedffdb7768b9298186c
+        - name: POSTGRES_PASSWORD
+          value: postgres
+        - name: HOSTNAME
+          value: ms-plataform
+      image: docker.io/library/postgres:11-alpine
+      ports:
+        - containerPort: 5432
+      resources: {}
+      securityContext:
+        allowPrivilegeEscalation: true
+        capabilities: {}
+        privileged: false
+        readOnlyRootFilesystem: false
+        seLinuxOptions: {}
+      workingDir: /
+    # - name: video-encoder
+    #   env:
+    #     - name: PATH
+    #       value: /go/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/bento4/bin
+    #     - name: TERM
+    #       value: xterm
+    #     - name: container
+    #       value: podman
+    #     - name: BENTO4_TARGET
+    #     - name: BENTO4_BIN
+    #       value: /opt/bento4/bin
+    #     - name: BENTO4_PATH
+    #       value: /opt/bento4
+    #     - name: GOPATH
+    #       value: /go
+    #     - name: BENTO4_CHECKSUM
+    #       value: 5378dbb374343bc274981d6e2ef93bce0851bda1
+    #     - name: GOLANG_VERSION
+    #       value: 1.14.15
+    #     - name: BENTO4_BASE_URL
+    #       value: http://zebulon.bok.net/Bento4/source/
+    #     - name: BENTO4_VERSION
+    #       value: 1-5-0-615
+    #     - name: BENTO4_TYPE
+    #       value: SRC
+    #     - name: HOSTNAME
+    #       value: ms-plataform
+    #   image: localhost/haungi/ms-plataform-video-encoder:dev
+    #   resources: {}
+    #   securityContext:
+    #     allowPrivilegeEscalation: true
+    #     capabilities: {}
+    #     privileged: false
+    #     readOnlyRootFilesystem: false
+    #     seLinuxOptions: {}
+    #   workingDir: /go/src
+    - name: catalog-api
+      command:
+        - npm
+        - run
+        - start:dev
+      env:
+        - name: PATH
+          value: /app/node_modules/.bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+        - name: TERM
+          value: xterm
+        - name: container
+          value: podman
+        - name: NODE_VERSION
+          value: 14.16.1
+        - name: YARN_VERSION
+          value: 1.22.5
+        - name: HOSTNAME
+          value: ms-plataform
+      image: localhost/haungi/ms-plataform-catalog-api:dev
+      ports:
+        - containerPort: 3333
+      resources: {}
+      securityContext:
+        allowPrivilegeEscalation: true
+        capabilities: {}
+        privileged: false
+        readOnlyRootFilesystem: false
+        runAsGroup: 1001
+        runAsUser: 1001
+        seLinuxOptions: {}
+      workingDir: /app
+    # - name: kibana
+    #   command:
+    #     - /usr/local/bin/kibana-docker
+    #   env:
+    #     - name: PATH
+    #       value: /usr/share/kibana/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+    #     - name: TERM
+    #       value: xterm
+    #     - name: container
+    #       value: podman
+    #     - name: ELASTIC_CONTAINER
+    #       value: "true"
+    #     - name: HOSTNAME
+    #       value: ms-plataform
+    #   image: docker.io/library/kibana:7.12.0
+    #   ports:
+    #     - containerPort: 5601
+    #   resources: {}
+    #   securityContext:
+    #     allowPrivilegeEscalation: true
+    #     capabilities: {}
+    #     privileged: false
+    #     readOnlyRootFilesystem: false
+    #     runAsGroup: 1000
+    #     runAsUser: 1000
+    #     seLinuxOptions: {}
+    #   workingDir: /usr/share/kibana
+  restartPolicy: Never
+status: {}

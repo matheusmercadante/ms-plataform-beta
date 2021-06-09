@@ -1,0 +1,32 @@
+FROM node:14-alpine3.11
+
+# Set working directory
+RUN mkdir -p /var/www/api
+WORKDIR /var/www/api
+
+# add `/usr/src/app/node_modules/.bin` to $PATH
+ENV PATH /var/www/api/node_modules/.bin:$PATH
+# create user with no password
+RUN adduser --disabled-password apiuser
+
+# Copy existing application directory contents
+COPY . /var/www/api
+# install and cache app dependencies
+COPY package.json /var/www/api/package.json
+COPY package-lock.json /var/www/api/package-lock.json
+
+# grant a permission to the application
+RUN chown -R apiuser:apiuser /var/www/api
+USER apiuser
+
+# clear application caching
+RUN npm cache clean --force
+# install all dependencies
+RUN npm install
+
+EXPOSE 3333
+# start run in production environment
+#CMD [ "npm", "run", "build-docker:dev" ]
+
+# start run in development environment
+CMD [ "npm", "run", "start:dev" ]

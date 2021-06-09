@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ms-plataform-deploy
+  labels:
+    app: deploy
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: deploy
+  template:
+    metadata:
+      labels:
+        app: deploy
+    spec:
+      containers:
+        - name: postgres
+          image: docker.io/library/postgres:11-alpine
+          ports:
+            - containerPort: 5432
+              hostPort: 5432

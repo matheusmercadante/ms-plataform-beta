@@ -1,0 +1,288 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: "2021-04-27T00:49:29Z"
+  labels:
+    app: ms-plataform
+  name: ms-plataform
+spec:
+  containers:
+    # - name: video-encoder
+    #   command:
+    #     - top
+    #   env:
+    #     - name: PATH
+    #       value: /go/bin:/usr/local/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/bento4/bin
+    #     - name: TERM
+    #       value: xterm
+    #     - name: container
+    #       value: podman
+    #     - name: BENTO4_BIN
+    #       value: /opt/bento4/bin
+    #     - name: BENTO4_PATH
+    #       value: /opt/bento4
+    #     - name: GOPATH
+    #       value: /go
+    #     - name: BENTO4_CHECKSUM
+    #       value: 5378dbb374343bc274981d6e2ef93bce0851bda1
+    #     - name: HOSTNAME
+    #       value: ms-plataform
+    #     - name: BENTO4_TARGET
+    #     - name: GOLANG_VERSION
+    #       value: 1.14.15
+    #     - name: BENTO4_BASE_URL
+    #       value: http://zebulon.bok.net/Bento4/source/
+    #     - name: BENTO4_VERSION
+    #       value: 1-5-0-615
+    #     - name: BENTO4_TYPE
+    #       value: SRC
+    #   image: localhost/haungi/ms-plataform-video-encoder:dev
+    #   resources: {}
+    #   securityContext:
+    #     allowPrivilegeEscalation: true
+    #     capabilities: {}
+    #     privileged: false
+    #     readOnlyRootFilesystem: false
+    #     seLinuxOptions: {}
+    #   workingDir: /go/src
+    - name: rabbitmq
+      command:
+        - rabbitmq-server
+      env:
+        - name: PATH
+          value: /opt/rabbitmq/sbin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+        - name: TERM
+          value: xterm
+        - name: container
+          value: podman
+        - name: RABBITMQ_HOME
+          value: /opt/rabbitmq
+        - name: RABBITMQ_DEFAULT_PASS
+          value: guest
+        - name: RABBITMQ_DEFAULT_USER
+          value: guest
+        - name: RABBITMQ_DATA_DIR
+          value: /var/lib/rabbitmq
+        - name: RABBITMQ_LOGS
+          value: "-"
+        - name: LANG
+          value: C.UTF-8
+        - name: OPENSSL_VERSION
+          value: 1.1.1k
+        - name: OPENSSL_PGP_KEY_IDS
+          value: 0x8657ABB260F056B1E5190839D9C4D26D0E604491 0x5B2545DAB21995F4088CEFAA36CEE4DEB00CFE33 0xED230BEC4D4F2518B9D7DF41F0DB4D21C1D35231 0xC1F33DD8CE1D4CC613AF14DA9195C48241FBF7DD 0x7953AC1FBC3DC8B3B292393ED5E9E43F7DF9EE8C 0xE5E52560DD91C556DDBDA5D02064C53641C25E5D
+        - name: LANGUAGE
+          value: C.UTF-8
+        - name: LC_ALL
+          value: C.UTF-8
+        - name: OPENSSL_SOURCE_SHA256
+          value: 892a0875b9872acd04a9fde79b1f943075d5ea162415de3047c327df33fbaee5
+        - name: HOME
+          value: /var/lib/rabbitmq
+        - name: OTP_VERSION
+          value: 23.3.1
+        - name: OTP_SOURCE_SHA256
+          value: 559a1d91f4b898e522597031ff0458879ce98a9fd16d1481b0e1231d1e8760ed
+        - name: RABBITMQ_PGP_KEY_ID
+          value: 0x0A9AF2115F4687BD29803A206B73A36E6026DFCA
+        - name: RABBITMQ_VERSION
+          value: 3.8.14
+        - name: HOSTNAME
+          value: ms-plataform
+      image: docker.io/library/rabbitmq:3.8.14-management-alpine
+      ports:
+        - containerPort: 15672
+          hostPort: 15672
+        - containerPort: 5672
+          hostPort: 5672
+      resources: {}
+      securityContext:
+        allowPrivilegeEscalation: true
+        capabilities: {}
+        privileged: false
+        readOnlyRootFilesystem: false
+        seLinuxOptions: {}
+      workingDir: /
+    - name: elasticsearch
+      command:
+        - eswrapper
+      env:
+        - name: PATH
+          value: /usr/share/elasticsearch/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+        - name: TERM
+          value: xterm
+        - name: container
+          value: podman
+        - name: ELASTIC_CONTAINER
+          value: "true"
+        - name: discovery.type
+          value: single-node
+        - name: HOSTNAME
+          value: ms-plataform
+      image: docker.io/library/elasticsearch:7.12.0
+      ports:
+        - containerPort: 9200
+          hostPort: 9200
+        - containerPort: 9300
+          hostPort: 9300
+      resources: {}
+      securityContext:
+        allowPrivilegeEscalation: true
+        capabilities: {}
+        privileged: false
+        readOnlyRootFilesystem: false
+        seLinuxOptions: {}
+      workingDir: /usr/share/elasticsearch
+    - name: kibana
+      command:
+        - /usr/local/bin/kibana-docker
+      env:
+        - name: PATH
+          value: /usr/share/kibana/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+        - name: TERM
+          value: xterm
+        - name: container
+          value: podman
+        - name: ELASTIC_CONTAINER
+          value: "true"
+        - name: ELASTICSEARCH_HOSTS
+          value: http://localhost:9200
+        - name: HOSTNAME
+          value: ms-plataform
+      image: docker.io/library/kibana:7.12.0
+      ports:
+        - containerPort: 5601
+          hostPort: 5601
+      resources: {}
+      securityContext:
+        allowPrivilegeEscalation: true
+        capabilities: {}
+        privileged: false
+        readOnlyRootFilesystem: false
+        runAsGroup: 1000
+        runAsUser: 1000
+        seLinuxOptions: {}
+      workingDir: /usr/share/kibana
+    - name: catalog-api
+      command:
+        - npm
+        - run
+        - start:dev
+      env:
+        - name: PATH
+          value: /opt/app-root/node_modules/.bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+        - name: TERM
+          value: xterm
+        - name: container
+          value: podman
+        - name: NODE_VERSION
+          value: 14.16.1
+        - name: YARN_VERSION
+          value: 1.22.5
+        - name: HOSTNAME
+          value: ms-plataform
+        - name: APP_ENV
+          value: development
+        - name: ELASTIC_SEARCH_HOST
+          value: http://localhost:9200
+        - name: ELASTIC_SEARCH_REQUEST_TIMEOUT
+          value: "30000"
+        - name: ELASTIC_SEARCH_PING_TIMEOUT
+          value: "3000"
+      image: localhost/haungi/ms-plataform-catalog-api:dev
+      ports:
+        - containerPort: 3333
+          hostPort: 3333
+          protocol: TCP
+      resources: {}
+      securityContext:
+        allowPrivilegeEscalation: true
+        capabilities: {}
+        privileged: false
+        readOnlyRootFilesystem: false
+        runAsGroup: 1001
+        runAsUser: 1001
+        seLinuxOptions: {}
+      workingDir: /opt/app-root
+    - name: postgres
+      command:
+        - postgres
+      env:
+        - name: PATH
+          value: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+        - name: TERM
+          value: xterm
+        - name: container
+          value: podman
+        - name: PG_MAJOR
+          value: "11"
+        - name: PG_VERSION
+          value: "11.11"
+        - name: PG_SHA256
+          value: 40607b7fa15b7d63f5075a7277daf7b3412486aa5db3aedffdb7768b9298186c
+        - name: POSTGRES_PASSWORD
+          value: postgres
+        - name: LANG
+          value: en_US.utf8
+        - name: PGDATA
+          value: /var/lib/postgresql/data
+        - name: HOSTNAME
+          value: ms-plataform
+      image: docker.io/library/postgres:11-alpine
+      ports:
+        - containerPort: 5432
+          hostPort: 5432
+      resources: {}
+      securityContext:
+        allowPrivilegeEscalation: true
+        capabilities: {}
+        privileged: false
+        readOnlyRootFilesystem: false
+        seLinuxOptions: {}
+      workingDir: /
+    - name: catalog-backend
+      command:
+        - /bin/sh
+        - -c
+        - npm run start:prod
+      env:
+        - name: PATH
+          value: /opt/app-root/node_modules/.bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+        - name: TERM
+          value: xterm
+        - name: container
+          value: podman
+        - name: NODE_VERSION
+          value: 14.16.0
+        - name: YARN_VERSION
+          value: 1.22.5
+        - name: HOSTNAME
+          value: ms-plataform
+        - name: APP_API_URL
+          value: http://localhost:4444
+        - name: APP_WEB_URL
+          value: http://localhost:3000
+        - name: STORAGE_DRIVER
+          value: disk
+        - name: REDIS_HOST
+          value: localhost
+        - name: REDIS_PORT
+          value: "6379"
+        - name: REDIS_PASSWORD
+          value: ""
+      image: localhost/haungi/ms-plataform-catalog-backend:dev
+      ports:
+        - containerPort: 4444
+          hostPort: 4444
+      resources: {}
+      securityContext:
+        allowPrivilegeEscalation: true
+        capabilities: {}
+        privileged: false
+        readOnlyRootFilesystem: false
+        runAsGroup: 0
+        runAsUser: 1001
+        seLinuxOptions: {}
+      workingDir: /opt/app-root/
+  restartPolicy: Never
+status: {}

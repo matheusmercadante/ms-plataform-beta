@@ -1,0 +1,17 @@
+{
+  "name": "plataform",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev:up": "./scripts/bootstrap.sh",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "class-transformer": "^0.4.0",
+    "jose": "^3.12.1"
+  }
+}

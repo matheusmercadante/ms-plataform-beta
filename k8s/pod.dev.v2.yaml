@@ -1,0 +1,100 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: "2021-05-22T17:00:57Z"
+  labels:
+    app: ms-plataform
+  name: ms-plataform
+spec:
+  containers:
+    - name: catalog-backend
+      args:
+        - npm
+        - run
+        - start:prod
+      command:
+        - docker-entrypoint.sh
+      env:
+        - name: PATH
+          value: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+        - name: TERM
+          value: xterm
+        - name: container
+          value: podman
+        - name: NODE_VERSION
+          value: 14.16.0
+        - name: YARN_VERSION
+          value: 1.22.5
+        - name: POSTGRES_USER
+          value: postgres
+        - name: POSTGRES_PASSWORD
+          value: postgres
+        - name: POSTGRES_DB
+          value: malicious_school_catalog
+        - name: DB_PORT
+          value: "5432"
+        - name: DB_SCHEMA
+          value: public
+        - name: DATABASE_URL
+          value: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${DB_HOST}:${DB_PORT}/${POSTGRES_DB}?schema=${DB_SCHEMA}&sslmode=prefer
+      image: localhost/haungi/ms-plataform-catalog-backend:dev
+      ports:
+        - containerPort: 4444
+          hostPort: 4444
+      resources: {}
+      securityContext:
+        allowPrivilegeEscalation: true
+        capabilities:
+          drop:
+            - CAP_MKNOD
+            - CAP_NET_RAW
+            - CAP_AUDIT_WRITE
+        privileged: false
+        readOnlyRootFilesystem: false
+        runAsGroup: 0
+        runAsUser: 1001
+        seLinuxOptions: {}
+      # workingDir: /opt/app-root/
+    - name: postgres
+      args:
+        - postgres
+      command:
+        - docker-entrypoint.sh
+      env:
+        - name: PATH
+          value: /usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+        - name: TERM
+          value: xterm
+        - name: container
+          value: podman
+        - name: PG_VERSION
+          value: "11.12"
+        - name: PGDATA
+          value: /var/lib/postgresql/data
+        - name: PG_MAJOR
+          value: "11"
+        - name: POSTGRES_PASSWORD
+          value: postgres
+        - name: PG_SHA256
+          value: 87f9d8b16b2b8ef71586f2ec76beac844819f64734b07fa33986755c2f53cb04
+        - name: LANG
+          value: en_US.utf8
+      image: docker.io/library/postgres:11-alpine
+      ports:
+        - containerPort: 5432
+          hostPort: 5432
+      resources: {}
+      securityContext:
+        allowPrivilegeEscalation: true
+        capabilities:
+          drop:
+            - CAP_MKNOD
+            - CAP_NET_RAW
+            - CAP_AUDIT_WRITE
+        privileged: false
+        readOnlyRootFilesystem: false
+        seLinuxOptions: {}
+      workingDir: /
+  dnsConfig: {}
+  restartPolicy: Never
+status: {}
